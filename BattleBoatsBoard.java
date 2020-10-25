@@ -124,13 +124,14 @@ class BattleBoatsBoard
             System.out.println();
         }
     }
-    /*public void drone(){
+    public void drone(){
         if(drones==0){
             System.out.println("Drone has been used the max amount of times.");
             return;
         }
         String choice;
-        int num;
+        int num, count=0;
+        char temp;
         turns += 1;
         Scanner sc = new Scanner(System.in);
         System.out.println("Would you like to scan a row or column? Type in r for row or c for column.");
@@ -145,5 +146,22 @@ class BattleBoatsBoard
             System.out.println("Invalid Input. Please type in a number within the boundaries of the board.");
             num = sc.nextInt();
         }
-    }*/
+        if(choice.equals("r")){
+            for(int i=0; i<board.length; i++){
+                temp = board[num][i].get_status();
+                if(temp=='H' || temp=='B'){
+                    count++;
+                }
+            }
+        }
+        else{
+            for(int i=0; i<board.length; i++){
+                temp = board[i][num].get_status();
+                if(temp=='H' || temp=='B'){
+                    count++;
+                }
+            }
+        }
+        System.out.println("Drone has scanned "+count+" targets in the specified area.");
+    }
 }
