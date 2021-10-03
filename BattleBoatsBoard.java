@@ -1,3 +1,5 @@
+//lars5831
+//khand080
 import java.util.Scanner;
 class BattleBoatsBoard 
 {
@@ -24,6 +26,16 @@ class BattleBoatsBoard
             }
         }
     }
+    public int getTurns() {
+        return turns;
+    }
+    public int getShots() {
+        return shots;
+    }
+    public int shipsLeft() {
+        return ships_left;
+    }
+
     public void placeBoats(){
         int x,y,len = board.length, inc, index=0;
         int boat_size[] = {5,5,4,4,3,3,3,3,2,2}; //array containing sizes of boats
@@ -78,6 +90,7 @@ class BattleBoatsBoard
             index++ ;
         }
     }
+
     public void print(){
         int [][] temp = new int [board.length][board.length];
         Cell arr[], t;
@@ -107,6 +120,7 @@ class BattleBoatsBoard
             System.out.println("\n");
         }
     }
+
     public void display(){
         for(int i=0; i<board.length; i++){
             for(int j=0; j<board.length; j++){
@@ -124,9 +138,10 @@ class BattleBoatsBoard
             System.out.println();
         }
     }
+
     public void drone(){
         if(drones==0){
-            System.out.println("Drone has been used the max amount of times.");
+            System.out.println("Drones have been used the max amount of times.");
             return;
         }
         String choice;
@@ -163,5 +178,90 @@ class BattleBoatsBoard
             }
         }
         System.out.println("Drone has scanned "+count+" targets in the specified area.");
+        drones--;
     }
+
+    public void fire() {
+        System.out.println("Please enter coordinates (x then y): ");
+        Scanner sc = new Scanner(System.in);
+        int x = sc.nextInt();
+        int y = sc.nextInt();
+        turns++;
+        if (x > board.length-1 || x < 0 || y > board.length-1 || y < 0                   // Checks out of bounds
+                || board[x][y].get_status() == 'M' || board[x][y].get_status() == 'H') { // and re-targets.
+            System.out.println("Penalty");
+            turns++;
+        } else {
+            if (board[x][y].get_status() == '-') { //Miss
+                shots++;
+                System.out.println("Miss");
+                board[x][y].set_status('M');
+            } else { // Hit/Sink
+                shots++;
+                board[x][y].set_status('H');
+                for (int i = 0; i < boats.length; i++) { //Checks to see if a boat sunk
+                    if (boats[i].isSunk(board)) {
+                        System.out.println("Sunk");
+                        BattleBoats[] temp = new BattleBoats [boats.length -1];
+                        int iter = 0;
+                        for (int j = 0; j < boats.length; j++) { // Removes the sunk boat from the boats array.
+                            if (j != i) {
+                                temp[iter] = boats[j];
+                                iter++;
+                            }
+                        }
+                        boats = temp;
+                        ships_left--;
+                        return; //Ends loop as soon as sunk boat is found
+                    }
+                } //Sunk check
+                System.out.println("Hit");
+            } //Hit/Sink
+        } // Viable move if/else
+    } //fire
+
+    public void missile() {
+        if (missiles == 0) {
+            System.out.println("Missiles have been used the max amount of times.");
+            return;
+        }
+        turns++;
+        int x,y;
+        System.out.println("Where would you like to fire your missile? (Enter x then y) ");
+        Scanner sc = new Scanner (System.in);
+        x = sc.nextInt();
+        y = sc.nextInt();
+        while (x > board.length-1 || x < 0 || y > board.length-1 || y < 0 ) { //Checks for out of bounds coords.
+            System.out.println("Invalid Coordinates. Please try again");
+            x = sc.nextInt();
+            y = sc.nextInt();
+        }
+        for (int i = -1; i < 2; i++) {
+            for (int j = -1; j < 2; j++) {
+                if (y + j > -1 && y + j < board.length && x + i > -1 && x + i < board.length) {
+                    if (board[x + i][y + j].get_status() == '-') { //Miss
+                        board[x + i][y + j].set_status('M');
+                    } else if (board[x + i][y + j].get_status() == 'B') { //Hits
+                        board[x + i][y + j].set_status('H');
+                        for (int k = 0; k < boats.length; k++) { //Checks to see if a boat sunk
+                            if (boats[k].isSunk(board)) {
+                                BattleBoats[] temp = new BattleBoats[boats.length - 1];
+                                int iter = 0;
+                                for (int l = 0; l < boats.length; l++) { // Removes the sunk boat from the boats array.
+                                    if (l != k) {
+                                        temp[iter] = boats[l];
+                                        iter++;
+                                    }
+                                }
+                                boats = temp;
+                                ships_left--;
+                                break; //Ends loop as soon as sunk boat is found
+                            }
+                        } //Sunk check
+                    } // Hit/Miss if/else
+                } //Within bounds
+            }
+        }
+        missiles--;
+    } // Missile
 }

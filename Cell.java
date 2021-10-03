@@ -1,3 +1,5 @@
+//lars5831
+//khand080
 class Cell
 {
     public int row, col;
@@ -18,5 +20,8 @@ class Cell
     }
     public int get_col(){
         return col;
+    }
+    public String toString() {
+        return "(" + get_row() + ", " + get_col() + ")";
     }
 }
